@@ -6,12 +6,17 @@ to the chatbot -> for each CSV row ask the question -> score the reply vs ground
 ## One-time setup
 
 ```
-cd C:\Users\maryambatool\chatbot-llm-tests
+cd chatbot-rag-tests
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+.venv\Scripts\python.exe -m pip install -r requirements.txt
 copy .env.example .env         # put your ANTHROPIC_API_KEY in .env
 ```
+
+You don't need to activate the venv. Call `.venv\Scripts\python.exe` directly, which also works when
+PowerShell blocks `Activate.ps1` under a Group Policy. Prerequisites: Android SDK (emulator + `adb`),
+Node.js with Appium and the UiAutomator2 driver.
+
+`.env` is git-ignored. `JUDGE_MODEL` sets the Claude model used as judge.
 
 ## Step 1 - capabilities (`config/capabilities.json`)
 
@@ -20,7 +25,7 @@ Edit this one file; the framework starts the emulator and Appium for you.
 - `emulator.avd_name`: `Pixel_7` or `Medium_Phone_API_36.1` (`emulator -list-avds`)
 - `capabilities."appium:appPackage"`: your app's package. Find it with
   `python -m src.list_apps` (user-installed apps) or `python -m src.list_apps chat` (search).
-- App not installed yet? Drag the APK onto the emulator, or add `"appium:app": "C:\\path\\app.apk"`.
+- App not installed yet? Drag the APK onto the emulator, or add `"appium:app": "path/to/app.apk"`.
 - The app is force-restarted on every run (`forceAppLaunch`) so the recorded flow always starts at the same place.
 
 ## Step 2 - record the flow
@@ -41,12 +46,18 @@ Re-record any time the app's navigation changes. Keep the emulator in portrait.
 
 ## Step 3 - test data
 
-Edit `data/test_cases.csv` (columns: id, category, question, ground_truth).
+Edit `data/test_cases.csv`. Columns: `id, category, question, ground_truth, expected_source, answerable`.
+
+- `expected_source`: key of the page the answer comes from (see [sources.md](sources.md)). The judge reads
+  `sources/<key>.txt` to check faithfulness. Those files are git-ignored, so recreate them from the URLs
+  in `sources.md` after cloning. An empty key means the judge sees all sources.
+- `answerable`: `yes`, or `no` for questions the knowledge base doesn't cover (out of scope, personal data,
+  medical advice, prompt injection). For `no` rows the bot should decline or redirect, not invent an answer.
 
 ## Step 4 - run
 
 ```
-pytest
+.venv\Scripts\python.exe -m pytest
 ```
 
 Results: `reports/results_<time>.csv` (every answer + scores) and `reports/summary_<time>.json`.
@@ -57,8 +68,20 @@ Results: `reports/results_<time>.csv` (every answer + scores) and `reports/summa
 | ------------ | ------- | ----------------------------------- |
 | correctness  | 1-5     | Claude judge vs ground truth        |
 | relevance    | 1-5     | Claude judge                        |
-| faithfulness | 1-5     | Claude judge (5 = no hallucination) |
+| faithfulness | 1-5     | Claude judge vs source text (5 = no hallucination) |
 | similarity   | 0-1     | Claude judge (semantic closeness)   |
 | latency_s    | seconds | send -> reply complete              |
 
 Thresholds live in `config/config.yaml` under `evaluation.thresholds`.
+
+## Project layout
+
+| Path | Purpose |
+| ---- | ------- |
+| `config/` | `capabilities.json` (emulator/app), `config.yaml` (locators, thresholds) |
+| `flows/chatbot_flow.json` | recorded navigation + chatbot locators |
+| `data/test_cases.csv` | questions, ground truth, source key, answerable flag |
+| `sources/` | local text of the knowledge-base pages (git-ignored) |
+| `src/` | driver, recorder, navigator, chatbot page object, judge (`metrics.py`) |
+| `tests/` | pytest suite |
+| `reports/` | generated results (git-ignored) |
