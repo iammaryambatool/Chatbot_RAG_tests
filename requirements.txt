@@ -4,3 +4,4 @@ python-dotenv
 anthropic
 Appium-Python-Client
 selenium
+deepeval

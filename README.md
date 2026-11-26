@@ -74,6 +74,26 @@ Results: `reports/results_<time>.csv` (every answer + scores) and `reports/summa
 
 Thresholds live in `config/config.yaml` under `evaluation.thresholds`.
 
+## DeepEval (second, independent evaluation)
+
+`tests/test_chatbot_deepeval.py` re-scores the same bot answers with the [DeepEval](https://github.com/confident-ai/deepeval)
+library, using Claude as the judge (`src/deepeval_metrics.py`). Each question is only asked to the bot once,
+and the reply is shared with the main test.
+
+| Metric (0-1)         | How                                                      |
+| -------------------- | -------------------------------------------------------- |
+| `de_answer_relevancy` | DeepEval `AnswerRelevancyMetric`                         |
+| `de_correctness`      | DeepEval `GEval` vs ground truth                         |
+| `de_faithfulness`     | DeepEval `FaithfulnessMetric` vs source text (`answerable = yes` rows only) |
+
+```
+.venv\Scripts\python.exe -m pytest tests/test_chatbot_deepeval.py   # DeepEval only
+.venv\Scripts\python.exe -m pytest tests/test_chatbot.py            # original judge only
+```
+
+Thresholds: `config/config.yaml` under `deepeval.thresholds`. Output: `reports/deepeval_results_<time>.csv`
+and `reports/deepeval_summary_<time>.json`. DeepEval telemetry is turned off.
+
 ## Project layout
 
 | Path | Purpose |
@@ -82,6 +102,6 @@ Thresholds live in `config/config.yaml` under `evaluation.thresholds`.
 | `flows/chatbot_flow.json` | recorded navigation + chatbot locators |
 | `data/test_cases.csv` | questions, ground truth, source key, answerable flag |
 | `sources/` | local text of the knowledge-base pages (git-ignored) |
-| `src/` | driver, recorder, navigator, chatbot page object, judge (`metrics.py`) |
+| `src/` | driver, recorder, navigator, chatbot page object, judge (`metrics.py`), DeepEval (`deepeval_metrics.py`) |
 | `tests/` | pytest suite |
 | `reports/` | generated results (git-ignored) |

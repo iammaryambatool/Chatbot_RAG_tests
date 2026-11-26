@@ -24,3 +24,11 @@ evaluation:
     faithfulness: 3.5      # 5 = no hallucination / contradiction
     similarity: 0.70
     max_latency_s: 20
+
+# ---- DeepEval (optional second evaluation, tests/test_chatbot_deepeval.py) ----
+# DeepEval scores are 0-1 (not the 1-5 scale above)
+deepeval:
+  thresholds:
+    answer_relevancy: 0.7
+    correctness: 0.5
+    faithfulness: 0.7

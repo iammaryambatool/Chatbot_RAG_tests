@@ -1,8 +1,8 @@
 from src.metrics import check_thresholds, load_reference
 
 
-def test_chatbot_answer(case, chatbot, evaluator, cfg, record):
-    reply = chatbot.ask(case["question"])
+def test_chatbot_answer(case, get_reply, evaluator, cfg, record):
+    reply = get_reply(case["question"])
     scores = evaluator.evaluate(case["question"], case["ground_truth"], reply.text, reply.latency_s,
                                 answerable=case.get("answerable", "yes"),
                                 reference=load_reference(case.get("expected_source", "")))
