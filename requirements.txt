@@ -1,0 +1,6 @@
+pytest
+pyyaml
+python-dotenv
+anthropic
+Appium-Python-Client
+selenium

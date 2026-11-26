@@ -1,0 +1,25 @@
+{
+  "appium": {
+    "server_url": "http://127.0.0.1:4723",
+    "auto_start": true
+  },
+  "emulator": {
+    "auto_start": true,
+    "avd_name": "Pixel_7",
+    "headless": false,
+    "boot_timeout_s": 300
+  },
+  "capabilities": {
+    "platformName": "Android",
+    "appium:automationName": "UiAutomator2",
+    "appium:appPackage": "com.minuteman.va",
+    "appium:noReset": true,
+    "appium:forceAppLaunch": true,
+    "appium:shouldTerminateApp": true,
+    "appium:autoGrantPermissions": true,
+    "appium:newCommandTimeout": 300,
+    "appium:uiautomator2ServerLaunchTimeout": 120000,
+    "appium:uiautomator2ServerInstallTimeout": 120000,
+    "appium:adbExecTimeout": 60000
+  }
+}

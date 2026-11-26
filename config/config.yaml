@@ -1,0 +1,26 @@
+# Device/app capabilities live in config/capabilities.json
+# The navigation flow + chatbot locators are RECORDED into flows/chatbot_flow.json
+#   (python -m src.recorder). Anything under `chatbot:` below that the recorder
+#   also finds (input_field, send_button, bot_messages) is overridden by the flow file.
+
+chatbot:
+  input_field:  { by: id, value: "TODO" }
+  send_button:  { by: id, value: "TODO" }
+  # Must match ALL bot message bubbles (not the user's). Last one = latest reply.
+  bot_messages: { by: id, value: "TODO" }
+  # Optional: element shown while the bot is "typing". Leave value empty to skip.
+  typing_indicator: { by: id, value: "" }
+  response_timeout_s: 45
+  # Reply counts as finished when text hasn't changed for this long
+  stable_for_s: 2
+
+# ---- Evaluation ----
+evaluation:
+  data_file: "data/test_cases.csv"
+  # A test fails if any threshold is not met (judge scores 1-5, similarity 0-1)
+  thresholds:
+    correctness: 3.5
+    relevance: 3.5
+    faithfulness: 3.5      # 5 = no hallucination / contradiction
+    similarity: 0.70
+    max_latency_s: 20

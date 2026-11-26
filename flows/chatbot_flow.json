@@ -1,0 +1,32 @@
+{
+  "recorded_at": "2026-11-26T20:51:19",
+  "package": "com.minuteman.va",
+  "navigation": [
+    {
+      "action": "tap",
+      "label": "Search",
+      "locators": [
+        {
+          "by": "text",
+          "value": "Search"
+        }
+      ],
+      "x_pct": 0.2981,
+      "y_pct": 0.5321
+    }
+  ],
+  "chatbot": {
+    "input_field": {
+      "by": "xpath",
+      "value": "(//android.widget.EditText)[1]"
+    },
+    "send_button": {
+      "by": "desc",
+      "value": "Send"
+    },
+    "bot_messages": {
+      "by": "xpath",
+      "value": "//android.widget.TextView[string-length(../@content-desc) > 0]"
+    }
+  }
+}
